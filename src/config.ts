@@ -8,7 +8,7 @@
  *          fica indisponível ("Checkout em preparação").
  * Preenchido → TODOS os botões de compra passam a abrir este endereço.
  */
-export const CHECKOUT_URL = '';
+export const CHECKOUT_URL = 'https://pay.kiwify.com.br/xP0Ippe';
 
 /** Fonte única de preço e dados do produto: textos, botões, FAQ e <meta> derivam daqui. */
 const CURRENCY = 'R$';
