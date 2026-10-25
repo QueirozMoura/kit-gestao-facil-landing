@@ -1,0 +1,16 @@
+node_modules
+dist
+review
+*.log
+npm-debug.log*
+.DS_Store
+*.tmp
+*.swp
+.env
+.env.*
+!.env.example
+# Materiais vendidos no kit: nunca versionar
+*.xlsx
+*.docx
+*.pdf
+*.zip
