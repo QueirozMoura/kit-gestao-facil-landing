@@ -1,12 +1,14 @@
 import React from 'react';
 import {ClipboardCheck, PackageCheck, Wallet} from 'lucide-react';
 import {BEFORE_AFTER as C} from '../content';
+import {Backdrop} from './Backdrop';
 import {Picture} from './Picture';
 
 const ICONS = [PackageCheck, Wallet, ClipboardCheck];
 
 export const BeforeAfter: React.FC = () => (
-  <section className="section section-light" id="antes-depois" aria-labelledby="ba-title">
+  <section className="section section-light" id="antes-depois" aria-labelledby="ba-title" data-scene>
+    <Backdrop tone="light" />
     <div className="container">
       <header className="head" data-reveal>
         <h2 id="ba-title" className="display">

@@ -34,7 +34,9 @@ export const CHECKOUT_URL = 'https://pay.kiwify.com.br/SEU-LINK';
 | Checkout, nome e **preço** (fonte única) | `src/config.ts` |
 | Textos (título, antes/depois, kit, passos, oferta, FAQ) | `src/content.ts` |
 | Cores, tipografia, espaçamentos, animações | `src/styles.css` |
-| Entradas de seção e inclinação do kit | `src/hooks/useMotion.ts` |
+| Entradas de seção, inclinação do hero pelo mouse | `src/hooks/useMotion.ts` |
+| Movimento ligado à rolagem (variáveis `--s`, `--in`, `--out`) | `src/hooks/scrollScenes.ts` (marque seções com `data-scene`) |
+| Fundo em camadas (luzes, planos de grade) e parallax | `src/components/Backdrop.tsx`, `src/depth.css` |
 | Estrutura das seções | `src/components/` |
 | Dimensões das imagens | `src/images.ts` |
 

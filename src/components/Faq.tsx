@@ -1,9 +1,11 @@
 import React from 'react';
 import {ChevronDown} from 'lucide-react';
+import {Backdrop} from './Backdrop';
 import {FAQ} from '../content';
 
 export const Faq: React.FC = () => (
-  <section className="section section-light" id="duvidas" aria-labelledby="faq-title">
+  <section className="section section-light" id="duvidas" aria-labelledby="faq-title" data-scene>
+    <Backdrop tone="light" />
     <div className="container faq-grid">
       <header className="head" data-reveal>
         <h2 id="faq-title" className="display display-sm">

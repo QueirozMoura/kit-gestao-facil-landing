@@ -1,8 +1,10 @@
 import React from 'react';
+import {Backdrop} from './Backdrop';
 import {STEPS} from '../content';
 
 export const HowItWorks: React.FC = () => (
-  <section className="section section-light steps-section" id="como-funciona" aria-labelledby="como-title">
+  <section className="section section-light steps-section" id="como-funciona" aria-labelledby="como-title" data-scene>
+    <Backdrop tone="light" />
     <div className="container">
       <header className="head" data-reveal>
         <h2 id="como-title" className="display display-sm">
@@ -10,7 +12,7 @@ export const HowItWorks: React.FC = () => (
           <span>atendimento registrado.</span>
         </h2>
       </header>
-      <ol className="steps" data-reveal>
+      <ol className="steps" data-reveal data-scene data-span="0.5">
         {STEPS.map((s, i) => (
           <li key={s.title}>
             <span className="step-n" aria-hidden="true">

@@ -1,0 +1,163 @@
+/* ============================================================
+   Profundidade: fundo em camadas e valores padrão da rolagem.
+   Os vetores de movimento (--s, --in, --out) vêm de hooks/scrollScenes.ts.
+   Os valores padrão abaixo são o estado "pronto": sem JS ou com movimento reduzido nada fica deslocado.
+   ============================================================ */
+
+[data-scene] {
+  --p: 0.5;
+  --s: 0;
+  --in: 1;
+  --out: 0;
+}
+
+.section > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Fundo ---------- */
+
+.bd {
+  --amp: 1;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+.bd > span {
+  position: absolute;
+  display: block;
+  transform: translate3d(calc(var(--s) * var(--ax, 0px) * var(--amp)), calc(var(--s) * var(--ay, 0px) * var(--amp)), 0);
+}
+[data-scene][data-on] .bd > span {
+  will-change: transform;
+}
+
+/* Luzes: gradientes radiais (sem blur), baixas em contraste e longe do texto. */
+.bd-glow {
+  width: min(760px, 130vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.bd-glow-a {
+  top: -14%;
+  right: -34%;
+  --ay: -110px;
+  --ax: -30px;
+}
+.bd-glow-b {
+  bottom: -22%;
+  left: -40%;
+  --ay: -190px;
+  --ax: 30px;
+}
+.bd-dark .bd-glow-a {
+  background: radial-gradient(circle at 40% 40%, rgba(31, 224, 122, 0.2), rgba(31, 224, 122, 0) 60%);
+  animation: drift 26s ease-in-out infinite alternate;
+}
+.bd-dark .bd-glow-b {
+  background: radial-gradient(circle at 60% 60%, rgba(48, 110, 255, 0.28), rgba(48, 110, 255, 0) 62%);
+  animation: drift 32s ease-in-out infinite alternate-reverse;
+}
+.bd-light .bd-glow-a {
+  background: radial-gradient(circle at 40% 40%, rgba(31, 224, 122, 0.12), rgba(31, 224, 122, 0) 60%);
+}
+.bd-light .bd-glow-b {
+  background: radial-gradient(circle at 60% 60%, rgba(48, 110, 255, 0.1), rgba(48, 110, 255, 0) 62%);
+}
+/* `translate` é independente de `transform`: a deriva lenta não briga com o parallax da rolagem. */
+@keyframes drift {
+  from {
+    translate: -3% 2%;
+  }
+  to {
+    translate: 4% -4%;
+  }
+}
+
+/* Planos: "folhas de planilha" em perspectiva, grade fina que some nas bordas. */
+.bd-plane {
+  --line: rgba(255, 255, 255, 0.1);
+  width: 520px;
+  height: 340px;
+  border: 1px solid var(--line);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 52px 34px;
+  -webkit-mask-image: radial-gradient(ellipse at 40% 50%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 40% 50%, #000 25%, transparent 75%);
+}
+.bd-light .bd-plane {
+  --line: rgba(14, 29, 59, 0.07);
+}
+.bd-plane-a {
+  top: 12%;
+  right: -300px;
+  --ay: -120px;
+  --ax: -20px;
+  transform: translate3d(calc(var(--s) * var(--ax) * var(--amp)), calc(var(--s) * var(--ay) * var(--amp)), 0) perspective(900px) rotateX(58deg) rotateZ(-24deg);
+}
+.bd-plane-b {
+  bottom: 6%;
+  left: -340px;
+  width: 440px;
+  height: 290px;
+  --ay: -50px;
+  --ax: 20px;
+  transform: translate3d(calc(var(--s) * var(--ax) * var(--amp)), calc(var(--s) * var(--ay) * var(--amp)), 0) perspective(900px) rotateX(58deg) rotateZ(18deg);
+}
+/* Célula selecionada: o único toque de verde, na camada mais rápida. */
+.bd-cell {
+  top: 30%;
+  right: 1.5%;
+  width: 84px;
+  height: 30px;
+  border: 2px solid rgba(31, 224, 122, 0.55);
+  border-radius: 3px;
+  background: rgba(31, 224, 122, 0.06);
+  --ay: -260px;
+  --ax: -14px;
+}
+.bd-light .bd-cell {
+  border-color: rgba(11, 122, 67, 0.3);
+  background: rgba(31, 224, 122, 0.06);
+}
+
+/* Animações contínuas só com a seção à vista e a aba visível. */
+.hero[data-live='false'] .bd > span,
+html[data-tab='hidden'] .bd > span {
+  animation-play-state: paused;
+}
+html[data-tab='hidden'] .hv-in,
+html[data-tab='hidden'] .rise {
+  animation-play-state: paused;
+}
+
+@media (max-width: 700px) {
+  .bd {
+    --amp: 0.55;
+  }
+  .bd-plane {
+    width: 380px;
+    height: 250px;
+    background-size: 38px 25px;
+  }
+  .bd-plane-a {
+    right: -270px;
+  }
+  .bd-plane-b {
+    left: -290px;
+    width: 340px;
+    height: 220px;
+  }
+}
+
+/* A célula verde só cabe na margem lateral do desktop; em telas menores cairia atrás do texto. */
+@media (max-width: 1099px) {
+  .bd .bd-cell {
+    display: none;
+  }
+}

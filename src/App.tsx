@@ -1,5 +1,5 @@
 import React from 'react';
-import {useReveal} from './hooks/useMotion';
+import {useReveal, useScrollScenes} from './hooks/useMotion';
 import {BeforeAfter} from './components/BeforeAfter';
 import {Faq} from './components/Faq';
 import {Footer} from './components/Footer';
@@ -13,6 +13,7 @@ import {VideoSection} from './components/VideoSection';
 
 export const App: React.FC = () => {
   useReveal();
+  useScrollScenes();
   return (
   <>
     <a className="skip-link" href="#conteudo">

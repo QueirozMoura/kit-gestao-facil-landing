@@ -38,6 +38,7 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 72px;
+  scroll-padding-bottom: 96px;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -358,18 +359,6 @@ a {
   z-index: 2;
 }
 
-.grid-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 20%, transparent 78%);
-  mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 20%, transparent 78%);
-}
-
 /* ---------- Primeira dobra ---------- */
 
 .hero {
@@ -379,6 +368,8 @@ a {
   color: var(--white);
   --focus: #fff;
   padding-block: clamp(28px, 4vw, 56px) calc(clamp(40px, 5vw, 72px));
+  /* As camadas 3D aproximadas da câmera crescem um pouco: não podem alargar a página. */
+  overflow-x: clip;
 }
 .hero::after {
   content: '';
@@ -407,31 +398,6 @@ a {
   background-size: 56px 56px;
   -webkit-mask-image: radial-gradient(ellipse 75% 85% at 72% 45%, #000 15%, transparent 75%);
   mask-image: radial-gradient(ellipse 75% 85% at 72% 45%, #000 15%, transparent 75%);
-}
-/* Luz difusa localizada atrás do produto: gradiente radial (sem blur) movido só com transform. */
-.hero-glow {
-  position: absolute;
-  top: 6%;
-  right: -4%;
-  width: min(820px, 70vw);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 40% 40%, rgba(31, 224, 122, 0.22), rgba(31, 224, 122, 0) 58%),
-    radial-gradient(circle at 70% 65%, rgba(48, 110, 255, 0.28), rgba(48, 110, 255, 0) 62%);
-  will-change: transform;
-  animation: glow 22s ease-in-out infinite alternate;
-}
-.hero[data-live='false'] .hero-glow {
-  animation-play-state: paused;
-}
-@keyframes glow {
-  from {
-    transform: translate3d(-4%, 2%, 0) scale(0.96);
-  }
-  to {
-    transform: translate3d(7%, -6%, 0) scale(1.06);
-  }
 }
 
 .hero-grid {
@@ -526,8 +492,15 @@ a {
   }
 }
 
-/* Conjunto do kit */
+/* Conjunto do kit: camadas em perspectiva. Os valores padrão (--out: 0) já são a composição montada;
+   a rolagem (--out) afasta e inclina as camadas, o mouse (--mx/--my) complementa no desktop.
+   --amp reduz as amplitudes por breakpoint. */
 .hero-visual {
+  --amp: 1;
+  --zq: -70px;
+  --zc: -40px;
+  --zs: 40px;
+  --zv: 100px;
   position: relative;
   perspective: 1500px;
   height: clamp(420px, 46vw, 620px);
@@ -537,8 +510,8 @@ a {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  transform: rotateX(calc(2.5deg + var(--rx, 0deg))) rotateY(calc(-7deg + var(--ry, 0deg)));
-  transition: transform 0.4s ease-out;
+  transform: rotateX(calc(var(--rx0, 2.5deg) + var(--out) * 9deg * var(--amp) + var(--my, 0) * -4deg))
+    rotateY(calc(var(--ry0, -7deg) - var(--out) * 4deg * var(--amp) + var(--mx, 0) * 4.5deg));
 }
 .hv {
   position: absolute;
@@ -559,25 +532,28 @@ a {
   left: 3%;
   top: 0;
   width: 38%;
-  transform: translateZ(-70px) rotate(-5deg);
+  transform: translate3d(calc(var(--out) * -26px * var(--amp)), calc(var(--out) * -70px * var(--amp)), calc(var(--zq) - var(--out) * 90px * var(--amp)))
+    rotate(calc(-5deg - var(--out) * 5deg * var(--amp)));
 }
 .hv-check {
   right: 0;
   top: 4%;
   width: 38%;
-  transform: translateZ(-40px) rotate(4deg);
+  transform: translate3d(calc(var(--out) * 26px * var(--amp)), calc(var(--out) * -58px * var(--amp)), calc(var(--zc) - var(--out) * 70px * var(--amp)))
+    rotate(calc(4deg + var(--out) * 5deg * var(--amp)));
 }
 .hv-sheet {
   left: -1%;
   top: 33%;
   width: 102%;
-  transform: translateZ(40px);
+  transform: translate3d(0, calc(var(--out) * -26px * var(--amp)), var(--zs));
 }
 .hv-saldo {
   left: 2%;
   top: 76%;
   width: 56%;
-  transform: translateZ(100px) rotate(-1.5deg);
+  transform: translate3d(calc(var(--out) * 14px * var(--amp)), calc(var(--out) * 34px * var(--amp)), calc(var(--zv) + var(--out) * 80px * var(--amp)))
+    rotate(-1.5deg);
 }
 .hv-saldo img {
   box-shadow:
@@ -826,6 +802,8 @@ a {
     0 0 0 1px rgba(255, 255, 255, 0.16),
     16px 16px 0 0 var(--navy-800),
     0 50px 90px -30px #000;
+  /* Gira devagar com a rolagem: de frente quando está no meio da tela. */
+  transform: perspective(1200px) rotateY(calc(var(--s) * -8deg * var(--amp, 1))) translate3d(0, calc(var(--s) * -14px * var(--amp, 1)), 0);
 }
 .video-frame video {
   width: 100%;
@@ -919,16 +897,30 @@ a {
   box-shadow:
     0 0 0 1px rgba(10, 26, 58, 0.1),
     0 34px 56px -26px rgba(10, 26, 58, 0.55);
-  transition:
-    transform 0.9s var(--ease),
-    opacity 0.7s ease;
+  /* Camadas que se acomodam com a rolagem: --in (0 → 1) desfaz o deslocamento e a inclinação;
+     --s (-1 → 1) separa as camadas em velocidades diferentes (--par). */
+  transform: perspective(1000px)
+    translate3d(calc(var(--kx, 0%) * (1 - var(--in)) * var(--amp)), calc(var(--ky, 0%) * (1 - var(--in)) * var(--amp) + var(--s) * var(--par, 0px) * var(--amp)), 0)
+    rotateX(calc((1 - var(--in)) * 10deg * var(--amp))) rotate(var(--r, 0deg));
+  opacity: calc(0.72 + var(--in) * 0.28);
+}
+.kit-stack {
+  --amp: 1;
+}
+.k1 {
+  --par: -14px;
+}
+.k2 {
+  --par: 28px;
 }
 .kit-sheet .k2 {
   position: absolute;
   right: -4%;
   bottom: -9%;
   width: 44%;
-  transform: rotate(2deg);
+  --r: 2deg;
+  --kx: -26%;
+  --ky: -34%;
 }
 .kit-sheet .kit-stack {
   margin-bottom: 8%;
@@ -936,8 +928,12 @@ a {
 .kit-parts .k2 {
   width: 84%;
   margin: -9% 0 0 auto;
-  transform: rotate(-1.2deg);
+  --r: -1.2deg;
+  --ky: -22%;
   position: relative;
+}
+.kit-parts .k1 {
+  --ky: 6%;
 }
 .kit-docs .kit-stack,
 .kit-guide .kit-stack {
@@ -948,12 +944,14 @@ a {
 }
 .kit-docs .k1,
 .kit-guide .k1 {
-  transform: rotate(-2.5deg);
+  --r: -2.5deg;
+  --kx: 24%;
 }
 .kit-docs .k2,
 .kit-guide .k2 {
   margin-top: 9%;
-  transform: rotate(2deg);
+  --r: 2deg;
+  --kx: -24%;
 }
 
 /* ---------- Como funciona ---------- */
@@ -977,6 +975,7 @@ a {
   height: 2px;
   background: var(--navy-950);
   transform-origin: left;
+  transform: scaleX(var(--in));
 }
 .steps li {
   padding-top: 22px;
@@ -1105,20 +1104,28 @@ a {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.1),
     0 40px 70px -24px rgba(0, 0, 0, 0.8);
-  transition: transform 0.9s var(--ease);
+  transform: perspective(1100px)
+    translate3d(calc(var(--kx, 0%) * (1 - var(--in)) * var(--amp)), calc(var(--ky, 0%) * (1 - var(--in)) * var(--amp) + var(--s) * var(--par, 0px) * var(--amp)), 0)
+    rotateX(calc((1 - var(--in)) * 8deg * var(--amp))) rotate(var(--r, 0deg));
+  opacity: calc(0.72 + var(--in) * 0.28);
 }
-.of1 { left: 0; top: 4%; width: 44%; transform: rotate(-7deg); }
-.of2 { left: 26%; top: 0; width: 44%; transform: rotate(-1deg); z-index: 1; }
-.of3 { right: 0; top: 6%; width: 44%; transform: rotate(6deg); }
+.offer-files {
+  --amp: 1;
+}
+.of1 { left: 0; top: 4%; width: 44%; --r: -7deg; --kx: 48%; --ky: 6%; --par: -10px; }
+.of2 { left: 26%; top: 0; width: 44%; --r: -1deg; --ky: 8%; --par: -26px; z-index: 1; }
+.of3 { right: 0; top: 6%; width: 44%; --r: 6deg; --kx: -48%; --ky: 6%; --par: -10px; }
 .of4 {
   left: 14%;
   bottom: 2%;
   width: 66%;
   z-index: 2;
+  --r: -1.5deg;
+  --ky: -22%;
+  --par: 30px;
   box-shadow:
     0 0 0 2px var(--green),
     0 30px 60px -20px rgba(0, 0, 0, 0.85);
-  transform: rotate(-1.5deg);
 }
 
 /* ---------- Perguntas frequentes ---------- */
@@ -1288,15 +1295,11 @@ a {
 
   .js .video-stage[data-reveal]:not(.in) .video-frame {
     opacity: 0;
-    transform: translate3d(40px, 0, 0) rotate(2deg);
   }
   .video-frame {
-    transition:
-      opacity 0.7s ease 0.1s,
-      transform 0.9s var(--ease) 0.1s;
+    transition: opacity 0.7s ease 0.1s;
   }
 
-  /* Materiais: as peças começam empilhadas e se abrem em leque. */
   .js .kit-row[data-reveal]:not(.in) .kit-text {
     opacity: 0;
     transform: translate3d(0, 24px, 0);
@@ -1306,24 +1309,7 @@ a {
       opacity 0.7s ease 0.15s,
       transform 0.8s var(--ease) 0.15s;
   }
-  .js .kit-row[data-reveal]:not(.in) .k1 {
-    opacity: 0;
-    transform: translate3d(0, 30px, 0) scale(0.97);
-  }
-  .js .kit-row[data-reveal]:not(.in) .k2 {
-    opacity: 0;
-    transform: translate3d(-14%, -10%, 0) rotate(0deg) scale(0.94);
-  }
-  .k2 {
-    transition-delay: 0.22s;
-  }
 
-  .js .steps[data-reveal]:not(.in)::before {
-    transform: scaleX(0);
-  }
-  .steps::before {
-    transition: transform 0.9s cubic-bezier(0.65, 0, 0.2, 1);
-  }
   .js .steps[data-reveal]:not(.in) li {
     opacity: 0;
     transform: translate3d(0, 20px, 0);
@@ -1351,19 +1337,6 @@ a {
   .offer-main[data-reveal] > :nth-child(5) { transition-delay: 0.3s; }
   .offer-main[data-reveal] > :nth-child(6) { transition-delay: 0.36s; }
   .offer-main[data-reveal] > :nth-child(7) { transition-delay: 0.42s; }
-
-  .js .offer-files[data-reveal]:not(.in) .of {
-    opacity: 0;
-    transform: translate3d(0, 30px, 0) rotate(0deg) scale(0.94);
-  }
-  .of {
-    transition:
-      transform 1s var(--ease),
-      opacity 0.7s ease;
-  }
-  .of2 { transition-delay: 0.1s; }
-  .of3 { transition-delay: 0.2s; }
-  .of4 { transition-delay: 0.32s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1372,14 +1345,11 @@ a {
   }
   .rise,
   .hv-in,
-  .hero-glow {
+  .bd > span {
     animation: none;
   }
-  .scene,
   .btn,
-  .btn-arrow,
-  .k,
-  .of {
+  .btn-arrow {
     transition: none;
   }
 }
@@ -1472,40 +1442,46 @@ a {
     margin-top: 24px;
     gap: 14px 20px;
   }
+  .hero-buy {
+    flex-wrap: nowrap;
+  }
   .hero-buy .btn {
-    flex: 1 1 100%;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 18px;
   }
   .hero-price {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 12px;
+    flex: none;
   }
   .hero-price strong {
-    font-size: 1.9rem;
+    font-size: 1.7rem;
   }
+  .hero-price span {
+    font-size: 0.8rem;
+  }
+  /* Celular: a mesma cena com profundidade menor (perspectiva mais distante, Z curto, amplitudes
+     de scroll reduzidas) e sem depender de mouse, hover ou giroscópio. */
   .hero-visual {
+    --amp: 0.6;
+    --rx0: 7deg;
+    --ry0: -6deg;
+    --zq: -60px;
+    --zc: -44px;
+    --zs: 18px;
+    --zv: 50px;
     height: auto;
-    aspect-ratio: 1 / 1.1;
-    perspective: none;
-  }
-  .scene {
-    transform: none;
-    transition: none;
-  }
-  .hv {
-    transform: none;
+    aspect-ratio: 1 / 1.18;
+    perspective: 900px;
   }
   .hv-quote {
     left: 2%;
     top: 0;
     width: 44%;
-    transform: rotate(-5deg);
   }
   .hv-check {
     right: 1%;
     top: 3%;
     width: 44%;
-    transform: rotate(5deg);
   }
   .hv-sheet {
     left: 0;
@@ -1514,9 +1490,8 @@ a {
   }
   .hv-saldo {
     left: 4%;
-    top: 90%;
+    top: 88%;
     width: 78%;
-    transform: rotate(-1.5deg);
   }
   .hv-caption {
     display: none;
@@ -1621,6 +1596,16 @@ a {
   }
   .site-footer {
     padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  }
+  /* Áreas de toque confortáveis (mínimo 44 px) nos links de texto. */
+  .brand,
+  .footer-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .footer-nav {
+    gap: 0 22px;
   }
   .sticky-bar {
     position: fixed;

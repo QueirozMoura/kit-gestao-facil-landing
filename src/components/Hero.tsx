@@ -3,21 +3,21 @@ import {HERO} from '../content';
 import {PRODUCT} from '../config';
 import {image} from '../images';
 import {useHeroLife} from '../hooks/useMotion';
+import {Backdrop} from './Backdrop';
 import {CtaLink} from './Cta';
 import {Picture} from './Picture';
 
 const d = (ms: number) => ({'--d': `${ms}ms`}) as React.CSSProperties;
 
 export const Hero: React.FC = () => {
-  const {hero, scene} = useHeroLife();
+  const {hero} = useHeroLife();
   const wide = image('hero-planilha');
   const narrow = image('hero-planilha-m');
 
   return (
-    <section className="hero" id="topo" aria-labelledby="hero-title" ref={hero} data-live="true">
-      <div className="hero-bg" aria-hidden="true">
-        <span className="hero-glow" />
-      </div>
+    <section className="hero" id="topo" aria-labelledby="hero-title" ref={hero} data-live="true" data-scene data-span="0.7">
+      <div className="hero-bg" aria-hidden="true" />
+      <Backdrop tone="dark" />
       <div className="container hero-grid">
         <div className="hero-copy">
           <p className="hero-eyebrow rise" style={d(0)}>
@@ -47,7 +47,7 @@ export const Hero: React.FC = () => {
           role="img"
           aria-label="Planilha de serviços com o status Pronto para retirada e o saldo pendente de cada OS, ao lado do checklist de entrada e do modelo de orçamento"
         >
-          <div className="scene" ref={scene}>
+          <div className="scene">
             <div className="hv hv-quote">
               <div className="hv-in" style={d(240)}>
                 <Picture name="orcamento" alt="" sizes="(max-width: 700px) 42vw, 280px" eager />

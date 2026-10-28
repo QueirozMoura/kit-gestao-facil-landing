@@ -1,12 +1,13 @@
 import React from 'react';
 import {VIDEO} from '../content';
+import {Backdrop} from './Backdrop';
 import {asset, image} from '../images';
 
 export const VideoSection: React.FC = () => {
   const poster = image('video-capa');
   return (
-    <section className="section section-dark video cut-top cut-bottom" aria-labelledby="video-title">
-      <div className="grid-bg" aria-hidden="true" />
+    <section className="section section-dark video cut-top cut-bottom" aria-labelledby="video-title" data-scene>
+      <Backdrop tone="dark" />
       <div className="container video-grid">
         <div className="video-copy" data-reveal>
           <h2 id="video-title" className="display">
@@ -17,7 +18,7 @@ export const VideoSection: React.FC = () => {
           <p className="head-lead">{VIDEO.text}</p>
           <p className="tag tag-dark">{VIDEO.tag}</p>
         </div>
-        <div className="video-stage" data-reveal>
+        <div className="video-stage" data-reveal data-scene>
           <div className="video-frame">
             {/* Sem autoplay e sem pré-carregar o arquivo: só baixa quando a pessoa aperta play. */}
             <video

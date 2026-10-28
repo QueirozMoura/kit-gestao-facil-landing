@@ -3,11 +3,12 @@ import {Check} from 'lucide-react';
 import {OFFER} from '../content';
 import {PRODUCT} from '../config';
 import {BuyButton} from './Cta';
+import {Backdrop} from './Backdrop';
 import {Picture} from './Picture';
 
 export const Offer: React.FC = () => (
-  <section className="section section-dark offer cut-top" id="oferta" aria-labelledby="oferta-title">
-    <div className="grid-bg" aria-hidden="true" />
+  <section className="section section-dark offer cut-top" id="oferta" aria-labelledby="oferta-title" data-scene>
+    <Backdrop tone="dark" />
     <div className="container offer-grid">
       <div className="offer-main" data-reveal>
         <p className="tag tag-dark">Kit completo</p>
@@ -42,7 +43,7 @@ export const Offer: React.FC = () => (
         <p className="offer-fine">{OFFER.note}</p>
       </div>
 
-      <div className="offer-files" aria-hidden="true" data-reveal>
+      <div className="offer-files" aria-hidden="true" data-reveal data-scene>
         <Picture name="guia-p1" alt="" className="of of3" sizes="(max-width: 900px) 40vw, 260px" />
         <Picture name="checklist" alt="" className="of of2" sizes="(max-width: 900px) 40vw, 260px" />
         <Picture name="orcamento" alt="" className="of of1" sizes="(max-width: 900px) 40vw, 260px" />

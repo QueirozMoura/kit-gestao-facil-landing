@@ -1,12 +1,14 @@
 import React from 'react';
 import {BookOpen, Boxes, ClipboardCheck, FileSpreadsheet} from 'lucide-react';
 import {KIT_ITEMS} from '../content';
+import {Backdrop} from './Backdrop';
 import {Picture} from './Picture';
 
 const ICONS = {sheet: FileSpreadsheet, parts: Boxes, doc: ClipboardCheck, guide: BookOpen} as const;
 
 export const Kit: React.FC = () => (
-  <section className="section section-paper" id="kit" aria-labelledby="kit-title">
+  <section className="section section-paper" id="kit" aria-labelledby="kit-title" data-scene>
+    <Backdrop tone="light" />
     <div className="container">
       <header className="head" data-reveal>
         <p className="tag">O que vem no kit</p>
@@ -21,7 +23,7 @@ export const Kit: React.FC = () => (
         {KIT_ITEMS.map((k, i) => {
           const Icon = ICONS[k.icon];
           return (
-            <article key={k.id} className={`kit-row kit-${k.layout} ${i % 2 ? 'is-flip' : ''}`} data-reveal>
+            <article key={k.id} className={`kit-row kit-${k.layout} ${i % 2 ? 'is-flip' : ''}`} data-reveal data-scene>
               <div className="kit-text">
                 <p className="kit-q">{k.question}</p>
                 <h3>
