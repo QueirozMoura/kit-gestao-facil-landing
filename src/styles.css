@@ -368,8 +368,6 @@ a {
   color: var(--white);
   --focus: #fff;
   padding-block: clamp(28px, 4vw, 56px) calc(clamp(40px, 5vw, 72px));
-  /* As camadas 3D aproximadas da câmera crescem um pouco: não podem alargar a página. */
-  overflow-x: clip;
 }
 .hero::after {
   content: '';
@@ -423,7 +421,8 @@ a {
   margin-top: 22px;
   font-weight: 800;
   font-stretch: 62%;
-  font-size: clamp(3.1rem, 6.5vw, 5.9rem);
+  /* O teto cabe a primeira linha inteira na coluna do texto (a partir de 961 px). */
+  font-size: clamp(3.1rem, 6.4vw, 5rem);
   line-height: 0.9;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -497,6 +496,8 @@ a {
    --amp reduz as amplitudes por breakpoint. */
 .hero-visual {
   --amp: 1;
+  --dx: 14px;
+  --dzv: 80px;
   --zq: -70px;
   --zc: -40px;
   --zs: 40px;
@@ -504,7 +505,13 @@ a {
   position: relative;
   perspective: 1500px;
   height: clamp(420px, 46vw, 620px);
-  margin-right: calc(var(--gutter) * -0.5);
+}
+/* Só com margem lateral de sobra o conjunto pode avançar sobre a coluna da direita. */
+@media (min-width: 1280px) {
+  .hero-visual {
+    --dx: 26px;
+    margin-right: calc(var(--gutter) * -0.5);
+  }
 }
 .scene {
   position: absolute;
@@ -532,14 +539,14 @@ a {
   left: 3%;
   top: 0;
   width: 38%;
-  transform: translate3d(calc(var(--out) * -26px * var(--amp)), calc(var(--out) * -70px * var(--amp)), calc(var(--zq) - var(--out) * 90px * var(--amp)))
+  transform: translate3d(calc(var(--out) * var(--dx) * -1 * var(--amp)), calc(var(--out) * -70px * var(--amp)), calc(var(--zq) - var(--out) * 90px * var(--amp)))
     rotate(calc(-5deg - var(--out) * 5deg * var(--amp)));
 }
 .hv-check {
-  right: 0;
+  right: 2%;
   top: 4%;
   width: 38%;
-  transform: translate3d(calc(var(--out) * 26px * var(--amp)), calc(var(--out) * -58px * var(--amp)), calc(var(--zc) - var(--out) * 70px * var(--amp)))
+  transform: translate3d(calc(var(--out) * var(--dx) * var(--amp)), calc(var(--out) * -58px * var(--amp)), calc(var(--zc) - var(--out) * 70px * var(--amp)))
     rotate(calc(4deg + var(--out) * 5deg * var(--amp)));
 }
 .hv-sheet {
@@ -552,7 +559,7 @@ a {
   left: 2%;
   top: 76%;
   width: 56%;
-  transform: translate3d(calc(var(--out) * 14px * var(--amp)), calc(var(--out) * 34px * var(--amp)), calc(var(--zv) + var(--out) * 80px * var(--amp)))
+  transform: translate3d(calc(var(--out) * 14px * var(--amp)), calc(var(--out) * 34px * var(--amp)), calc(var(--zv) + var(--out) * var(--dzv) * var(--amp)))
     rotate(-1.5deg);
 }
 .hv-saldo img {
@@ -1365,9 +1372,21 @@ a {
   .hero-lead {
     max-width: 44ch;
   }
+  /* Coluna única: conjunto centralizado, com largura máxima e amplitudes menores, para as
+     camadas continuarem dentro da tela durante toda a rolagem. */
   .hero-visual {
+    --amp: 0.75;
+    --dx: 8px;
+    --zv: 60px;
+    --dzv: 50px;
+    width: 100%;
+    max-width: 600px;
+    margin-inline: auto;
     height: clamp(380px, 62vw, 540px);
-    margin-right: 0;
+  }
+  .hv-sheet {
+    left: 0;
+    width: 100%;
   }
   .ba {
     grid-template-columns: minmax(0, 1fr);
@@ -1463,25 +1482,28 @@ a {
      de scroll reduzidas) e sem depender de mouse, hover ou giroscópio. */
   .hero-visual {
     --amp: 0.6;
+    --dx: 6px;
+    --dzv: 36px;
     --rx0: 7deg;
     --ry0: -6deg;
     --zq: -60px;
     --zc: -44px;
     --zs: 18px;
-    --zv: 50px;
+    --zv: 34px;
+    max-width: 520px;
     height: auto;
     aspect-ratio: 1 / 1.18;
     perspective: 900px;
   }
   .hv-quote {
-    left: 2%;
+    left: 5%;
     top: 0;
-    width: 44%;
+    width: 42%;
   }
   .hv-check {
-    right: 1%;
+    right: 6%;
     top: 3%;
-    width: 44%;
+    width: 42%;
   }
   .hv-sheet {
     left: 0;
@@ -1644,8 +1666,37 @@ a {
   }
 }
 
+/* Celulares estreitos: títulos proporcionais à largura (mesmo tamanho de antes a partir de ~390 px),
+   para a segunda linha caber inteira em vez de deixar uma palavra sozinha. */
+@media (max-width: 430px) {
+  .display {
+    font-size: min(2.6rem, 10.8vw);
+  }
+  .display-sm {
+    font-size: min(2.3rem, 10vw);
+  }
+}
+
 @media (max-width: 380px) {
   .hero h1 {
     font-size: 2.5rem;
+  }
+  .hero-eyebrow {
+    text-wrap: balance;
+  }
+  .hero-buy {
+    gap: 12px;
+  }
+  .hero-buy .btn {
+    flex: 1 1 auto;
+    padding: 0 14px;
+    white-space: nowrap;
+  }
+  .btn-lg {
+    padding: 0 18px;
+    font-size: 1.05rem;
+  }
+  .btn-block {
+    text-align: center;
   }
 }
