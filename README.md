@@ -1,68 +1,58 @@
 # Kit Gestão Fácil · landing page
 
-Página de venda do **Kit Gestão Fácil para Assistência Técnica** (planilha de serviços, controle de peças e documentos editáveis).
-React 19 + TypeScript + Vite. Página única e estática: sem backend, analytics, cookies ou formulários.
-
-## Instalação, execução e build
-
-Requer Node.js 20+.
+Página de venda do **Kit Gestão Fácil para Assistência Técnica** (R$ 39,90, pagamento único). Página estática: HTML + CSS + ~3 KB de JavaScript (TypeScript + Vite, **sem React**). Todo o conteúdo comercial está em `index.html` e é legível sem JavaScript.
 
 ```bash
-npm install        # instala as dependências (versões fixadas)
-npm run dev        # desenvolvimento: http://127.0.0.1:5173/
-npm run build      # confere os tipos (tsc) e gera dist/
-npm run preview    # serve o build: http://127.0.0.1:4173/
+npm install
+npm run dev        # http://127.0.0.1:5173/
+npm run build      # tsc --noEmit + vite build → dist/ (caminhos relativos, sem deploy)
+npm run preview    # http://127.0.0.1:4173/
 ```
 
-`dist/` é autossuficiente (caminhos relativos) e pode ser hospedada em qualquer lugar. Este repositório não faz deploy.
+Não há linter configurado; a verificação estática é o `tsc` do build.
 
-## Configurar o checkout (`CHECKOUT_URL`)
+## Estrutura
 
-Edite **uma linha** em `src/config.ts`:
-
-```ts
-export const CHECKOUT_URL = 'https://pay.kiwify.com.br/SEU-LINK';
-```
-
-- **Vazio** (estado atual): os botões "Quero o kit" levam à seção da oferta e o botão final de compra aparece desabilitado ("Checkout em preparação").
-- **Preenchido:** todos os botões de compra abrem esse endereço. Depois rode `npm run build`.
-
-## Onde editar
-
-| O quê | Arquivo |
+| O quê | Onde |
 |---|---|
-| Checkout, nome e **preço** (fonte única) | `src/config.ts` |
-| Textos (título, antes/depois, kit, passos, oferta, FAQ) | `src/content.ts` |
-| Cores, tipografia, espaçamentos, animações | `src/styles.css` |
-| Entradas de seção, inclinação do hero pelo mouse | `src/hooks/useMotion.ts` |
-| Movimento ligado à rolagem (variáveis `--s`, `--in`, `--out`) | `src/hooks/scrollScenes.ts` (marque seções com `data-scene`) |
-| Fundo em camadas (luzes, planos de grade) e parallax | `src/components/Backdrop.tsx`, `src/depth.css` |
-| Estrutura das seções | `src/components/` |
-| Dimensões das imagens | `src/images.ts` |
+| Textos e seções (abertura, demonstração, kit, como funciona, oferta, FAQ, rodapé) | `index.html` |
+| Checkout, nome e preço (fonte única; entram no HTML no build via `%CHECKOUT_URL%`, `%PRICE%`, `%AMOUNT%`) | `src/config.ts` |
+| Visual | `src/styles.css` |
+| Animação da abertura | `src/intro.ts` |
+| Ampliação das capturas | `src/lightbox.ts` |
+| Cabeçalho, barra de compra, estado "depois da abertura" | `src/chrome.ts` |
+| UTM + evento de clique no checkout | `src/tracking.ts` |
 
-O preço vem só de `src/config.ts` (`PRODUCT`): botões, FAQ, oferta, barra fixa, rodapé e o `<title>`/descrição do `index.html` (via `%PRICE%`, substituído no build) derivam dele.
+## Abertura com rolagem
 
-## Imagens e vídeo
+`.intro` é uma faixa alta (100svh + 200vh no desktop, + 105vh no celular) com um palco `position: sticky`. `src/intro.ts` calcula o progresso pela posição da faixa (rolagem nativa, nada é interceptado) e, em `requestAnimationFrame` e só quando o valor muda, desenha o quadro correspondente num `<canvas>` e atualiza `--a`/`--b` (opacidade dos dois textos). Rolar para cima retrocede a cena; nada toca sozinho.
 
-`public/img` tem apenas recortes em baixa resolução da planilha **demonstrativa** (dados fictícios) e de páginas dos documentos, em WebP. `public/video` tem o MP4 de 30 s.
-Os arquivos completos vendidos no kit (planilhas, Word, PDFs) **não** fazem parte deste repositório.
+- **Origem:** primeiro vídeo da bancada (1280×720, 24 fps) + imagem de apoio. Usados os quadros 1–84 (0–3,5 s), de 2 em 2 (12 quadros/s). Depois do quadro ~88 o teclado e a caneta do notebook se deformam e em ~130 há corte de câmera; esse trecho foi descartado, sem zoom nem interpolação. O quadro 0 é a própria imagem, igual ao poster.
+- **Gerar de novo:** `FFMPEG=/caminho/ffmpeg npm run sequence` (`scripts/build-hero-sequence.sh`). Saída em `public/hero`: `d-NNN.webp` (desktop, 1280×720, nativo) e `m-NNN.webp` (celular, recorte 4:5 de 576×720 que acompanha o notebook), 43 quadros cada.
+- **Carregamento:** só o poster no início (`<img>` + `preload`). Os quadros começam na primeira interação (ou 2,5 s após o load), em ordem espaçada→densa, com 3 (desktop) ou 2 (celular) downloads simultâneos. Na memória: arquivos comprimidos + cache LRU de 10 (desktop) / 16 (celular) quadros decodificados. O canvas usa o tamanho nativo do quadro (sem ampliar nem depender do devicePixelRatio); a imagem para de crescer acima de 1664 px de largura.
+- **Fallbacks:** `prefers-reduced-motion` → página comum, imagem parada, os dois textos em sequência e nenhum quadro baixado. `Save-Data`/2G ou falha dos quadros → modo estático (`.is-static`). Sem JavaScript → idem. Quadros que faltam no meio da rolagem: usa o mais próximo já carregado.
+- **A cena é ilustrativa:** há uma legenda na abertura dizendo que a planilha na tela não é a do kit. As capturas reais (versão demonstrativa, dados fictícios) vêm logo abaixo.
 
-`npm run assets` (`scripts/prepare-assets.sh`) regenera as imagens a partir dos originais e só funciona para quem os tem ao lado do projeto; o build não depende disso.
+## Imagens
 
-## Revisão visual (opcional)
+`public/img` guarda recortes reais da planilha demonstrativa e das páginas dos documentos, em WebP em 2 larguras. `npm run assets` (`scripts/prepare-assets.sh`) regenera a partir dos originais (precisa de LibreOffice, poppler e Pillow; o build não depende disso). O recorte do Resumo termina na tabela de valores, porque o aviso amarelo abaixo ficava cortado.
 
-Com `npm run preview` rodando e um Chrome/Chromium instalado:
+## Rastreamento (Meta Pixel `1118427907435809`)
 
-```bash
-CHROME_PATH=/usr/bin/chromium node scripts/shots.mjs      # capturas em review/ (desktop, celular, movimento reduzido)
-CHROME_PATH=/usr/bin/chromium node scripts/interact2.mjs  # hover, foco, inclinação, sem JS
-```
+Auditoria do que existia: `index.html` tinha `fbq('init')` + `fbq('track','PageView')` uma única vez (o `<noscript>` só dispara sem JavaScript, então não duplica), sem outros eventos e sem tratamento de UTM. Mantido.
 
-## Pendências antes de publicar (fora da página)
+- **PageView:** uma vez, no `<head>`.
+- **Clique no botão de compra:** evento **personalizado** `CheckoutClick` (`trackCustom`), com `placement` (abertura, cabeçalho, barra, oferta) e o nome do produto. Sem valor e sem dados pessoais. Não é `Purchase` nem `InitiateCheckout` (este fica para o checkout da Kiwify, para não duplicar).
+- **UTM:** `utm_*`, `src` e `sck` da URL da página são repassados ao link do checkout (`https://pay.kiwify.com.br/xP0Ippe`).
+- **Compra aprovada (`Purchase`):** **não** é disparada pela página e não foi verificada. Só pode vir da Kiwify (integração de Pixel do produto na Kiwify, com o mesmo ID) ou da API de Conversões. Conferir lá, com uma compra de teste, antes de reativar anúncios.
 
-1. Preencher `CHECKOUT_URL` com o link da Kiwify.
-2. Conferir se "área de membros" descreve a entrega configurada na Kiwify.
-3. Política de privacidade, termos e suporte: a página não tem nenhum; verifique se são exigidos.
-4. Dados do vendedor, domínio/hospedagem, imagem de compartilhamento e favicon definitivo, se desejar.
-5. Validar a importação no Google Planilhas (a página diz que ainda não foi testada).
-6. Conferir preço e conteúdo no checkout.
+## Revisão em navegador
+
+Com `npm run preview` rodando e um Chrome/Chromium: `CHROME_PATH=... node scripts/review.mjs` (abertura em vários cenários) e `node scripts/review-page.mjs` (página inteira, FAQ, ampliação, links). Capturas em `review/` (ignorada pelo git).
+
+## Pendências fora da página
+
+1. Conferir na Kiwify como os arquivos são entregues (a página diz só "acessar e baixar depois da aprovação") e o rastreamento de compra.
+2. Política de privacidade, termos e suporte: a página não tem; verifique se são exigidos.
+3. Imagem de compartilhamento (og:image) e domínio/hospedagem.
+4. Validar a importação no Google Planilhas (a página diz que não foi testada).

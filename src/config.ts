@@ -1,29 +1,13 @@
 /**
- * LINK DO CHECKOUT (Kiwify)
- * -------------------------
- * Cole aqui o endereço do checkout quando ele estiver pronto, por exemplo:
- *   export const CHECKOUT_URL = 'https://pay.kiwify.com.br/XXXXXXX';
- *
- * Vazio  → os botões de navegação levam à seção da oferta e o botão final de compra
- *          fica indisponível ("Checkout em preparação").
- * Preenchido → TODOS os botões de compra passam a abrir este endereço.
+ * Checkout (Kiwify) e dados do produto. Fonte única: o index.html recebe estes valores no build
+ * (%CHECKOUT_URL%, %PRICE%, %AMOUNT%) e o JavaScript só acrescenta os parâmetros de campanha (UTM) ao link.
  */
 export const CHECKOUT_URL = 'https://pay.kiwify.com.br/xP0Ippe';
-
-/** Fonte única de preço e dados do produto: textos, botões, FAQ e <meta> derivam daqui. */
-const CURRENCY = 'R$';
-const AMOUNT = '39,90';
 
 export const PRODUCT = {
   name: 'Kit Gestão Fácil para Assistência Técnica',
   shortName: 'Kit Gestão Fácil',
-  currency: CURRENCY,
-  amount: AMOUNT,
-  price: `${CURRENCY}${AMOUNT}`,
+  amount: '39,90',
+  price: 'R$ 39,90',
   priceNote: 'Pagamento único',
-  tagline: 'Kit digital para assistências técnicas',
 } as const;
-
-export const hasCheckout = CHECKOUT_URL.trim().length > 0;
-/** Destino dos botões de ação: checkout (se configurado) ou a seção da oferta. */
-export const ctaHref = hasCheckout ? CHECKOUT_URL.trim() : '#oferta';

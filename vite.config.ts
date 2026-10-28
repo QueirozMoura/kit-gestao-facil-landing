@@ -1,16 +1,18 @@
-import react from '@vitejs/plugin-react';
 import {defineConfig} from 'vite';
-import {PRODUCT} from './src/config';
+import {CHECKOUT_URL, PRODUCT} from './src/config';
 
 // base relativa: a pasta dist funciona em qualquer domínio ou subpasta.
-// %PRICE% no index.html vem de src/config.ts (fonte única do preço).
+// Os marcadores %PRICE%, %AMOUNT% e %CHECKOUT_URL% do index.html vêm de src/config.ts (fonte única).
 export default defineConfig({
   base: './',
   plugins: [
-    react(),
     {
       name: 'product-placeholders',
-      transformIndexHtml: (html) => html.replaceAll('%PRICE%', PRODUCT.price),
+      transformIndexHtml: (html) =>
+        html
+          .replaceAll('%PRICE%', PRODUCT.price)
+          .replaceAll('%AMOUNT%', PRODUCT.amount)
+          .replaceAll('%CHECKOUT_URL%', CHECKOUT_URL.trim()),
     },
   ],
   server: {host: '127.0.0.1', port: 5173},

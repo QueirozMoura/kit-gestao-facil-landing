@@ -1,9 +1,9 @@
 """Recortes legíveis das capturas reais + conversão para WebP em 2 larguras.
-Uso: python3 crop-assets.py <pasta_tmp> <pasta_saida> <capa_video.png>"""
+Uso: python3 crop-assets.py <pasta_tmp> <pasta_saida>"""
 import json, sys
 from PIL import Image
 
-tmp, out, poster = sys.argv[1], sys.argv[2], sys.argv[3]
+tmp, out = sys.argv[1], sys.argv[2]
 manifest = {}
 
 def save(name, im, widths):
@@ -27,12 +27,11 @@ save('pecas-saldo', crop('pecas', (3094, 220, 4665, 833)), [786, 1571])
 # Aba MOVIMENTAÇÕES (600 dpi): Data → OS relacionada, 7 lançamentos
 save('movimentacoes', crop('mov', (0, 145, 1504, 562)), [752, 1504])
 # Aba RESUMO (300 dpi): blocos de OS e valores
-save('resumo', crop('resumo', (0, 0, 1900, 1450)), [640, 1280])
+# termina na tabela de valores: o aviso amarelo abaixo ficava cortado na captura
+save('resumo-demo', crop('resumo', (0, 0, 1900, 1143)), [640, 1280])
 # Páginas dos documentos
 for name in ('checklist', 'orcamento', 'guia-p1', 'guia-p4'):
     save(name, Image.open(f'{tmp}/{name}.png'), [480, 960])
-# Capa do vídeo (poster)
-save('video-capa', Image.open(poster), [360, 720])
 
 with open(f'{out}/manifest.json', 'w') as f:
     json.dump(manifest, f, indent=1)

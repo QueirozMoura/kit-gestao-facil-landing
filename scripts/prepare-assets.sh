@@ -7,10 +7,8 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 KIT="$HERE/../Kit_Gestao_Facil_Produto_Principal"
 OUT="$HERE/public/img"
-POSTER="$POSTER"
-VIDEO="$HERE/../video-remotion/out/kit-gestao-facil-reels-30s.mp4"
-if [ ! -d "$KIT" ] || [ ! -f "$POSTER" ] || [ ! -f "$VIDEO" ]; then
-  echo "Arquivos originais do kit/vídeo não encontrados ao lado deste projeto. Usando as imagens já incluídas em public/." >&2
+if [ ! -d "$KIT" ]; then
+  echo "Arquivos originais do kit não encontrados ao lado deste projeto. Usando as imagens já incluídas em public/." >&2
   exit 1
 fi
 TMP="$(mktemp -d)"
@@ -32,9 +30,5 @@ pdftoppm -r 150 -png -singlefile "$KIT/Modelo_de_Orcamento.pdf" "$TMP/orcamento"
 pdftoppm -f 1 -l 1 -r 150 -png -singlefile "$KIT/Guia_Rapido.pdf" "$TMP/guia-p1"
 pdftoppm -f 4 -l 4 -r 150 -png -singlefile "$KIT/Guia_Rapido.pdf" "$TMP/guia-p4"
 
-python3 "$HERE/scripts/crop-hero.py" "$TMP" "$OUT"
-python3 "$HERE/scripts/crop-assets.py" "$TMP" "$OUT" "$POSTER"
-
-# Vídeo: cópia do MP4 final (o arquivo do projeto Remotion permanece intacto).
-cp "$VIDEO" "$HERE/public/video/kit-gestao-facil-30s.mp4"
+python3 "$HERE/scripts/crop-assets.py" "$TMP" "$OUT"
 echo "Assets prontos."
