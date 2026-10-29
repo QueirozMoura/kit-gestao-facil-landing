@@ -1,6 +1,6 @@
 # Kit Gestão Fácil · landing page
 
-Página de venda do **Kit Gestão Fácil para Assistência Técnica** (R$ 39,90, pagamento único). Página estática: HTML + CSS + ~3 KB de JavaScript (TypeScript + Vite, **sem React**). Todo o conteúdo comercial está em `index.html` e é legível sem JavaScript.
+Página de venda do **Kit Gestão Fácil para Assistência Técnica** (R$ 19,90, pagamento único). Página estática: HTML + CSS + ~3 KB de JavaScript (TypeScript + Vite, **sem React**). Todo o conteúdo comercial está em `index.html` e é legível sem JavaScript.
 
 ```bash
 npm install

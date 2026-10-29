@@ -7,7 +7,7 @@ export const CHECKOUT_URL = 'https://pay.kiwify.com.br/xP0Ippe';
 export const PRODUCT = {
   name: 'Kit Gestão Fácil para Assistência Técnica',
   shortName: 'Kit Gestão Fácil',
-  amount: '39,90',
-  price: 'R$ 39,90',
+  amount: '19,90',
+  price: 'R$ 19,90',
   priceNote: 'Pagamento único',
 } as const;
