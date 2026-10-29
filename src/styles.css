@@ -7,7 +7,7 @@
   --surface: #1a2321;
   --line: #2a3633;
   --text: #eef3f0;
-  --muted: #9db0a9;
+  --muted: #a9bbb4;
   --teal: #3fa79c; /* verde-petróleo, detalhes */
   --teal-deep: #1d5d58;
   --green: #3fe08a; /* ação de compra */
@@ -18,12 +18,12 @@
   --gutter: clamp(20px, 5vw, 48px);
   --header-h: 64px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --run: 200vh; /* trecho de rolagem da animação (desktop) */
+  --run: 360vh; /* rolagem útil da abertura (desktop); a cena continua depois dela, pelo progresso global */
 }
 
 @media (max-width: 760px) {
   :root {
-    --run: 105vh; /* celular: percurso bem mais curto */
+    --run: 190vh; /* celular */
     --header-h: 56px;
   }
 }
@@ -47,7 +47,7 @@ body {
   font-size: 1.0625rem;
   line-height: 1.55;
   color: var(--text);
-  background: var(--bg);
+  background: transparent; /* o fundo é do <html>: assim o palco (z-index -1) aparece entre os dois */
   overflow-x: clip;
 }
 
@@ -261,13 +261,96 @@ a {
   }
 }
 
-/* ---------- Abertura (cena presa na tela) ---------- */
+/* ---------- Palco global ----------
+   Uma cena fixa por trás de TODA a página. src/scene.ts a move pelo progresso global da rolagem e escreve
+   as variáveis abaixo (--s, --tx, --ty, --dim, --shade, --la…). Só transform e opacity: tudo no compositor.
+   Sem JavaScript, ou com movimento reduzido, o palco é só a imagem parada no topo e as seções têm fundo sólido. */
+.world {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: -1;
+  height: max(100vh, 620px);
+  overflow: hidden;
+  background: var(--bg);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js .world {
+    position: fixed;
+    inset: 0;
+    height: auto;
+  }
+}
+.world-media {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 100%;
+  max-width: 1664px; /* 1,3× o vídeo de 1280 px: acima disso a imagem para de crescer */
+  height: 100%;
+  max-height: 936px;
+  margin-block: auto;
+  transform: translate3d(var(--tx, 0%), var(--ty, 0%), 0) scale(var(--s, 1));
+  transform-origin: 70% 40%;
+  will-change: transform;
+  /* bordas dissolvem no grafite; a esquerda é o espaço do texto */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24%), linear-gradient(to bottom, transparent 0, #000 6%, #000 84%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent 0, #000 24%), linear-gradient(to bottom, transparent 0, #000 6%, #000 84%, transparent 100%);
+  mask-composite: intersect;
+}
+.world-media picture,
+.intro-poster,
+.intro-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 75% 50%;
+}
+.intro-canvas {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.intro-canvas.is-ready {
+  opacity: 1;
+}
+/* texto da abertura: degradê à esquerda e embaixo */
+.world-shade {
+  position: absolute;
+  inset: 0;
+  opacity: var(--shade, 1);
+  background:
+    linear-gradient(90deg, rgba(15, 20, 19, 0.94) 0%, rgba(15, 20, 19, 0.72) 34%, rgba(15, 20, 19, 0) 62%),
+    linear-gradient(to top, var(--bg) 0, rgba(15, 20, 19, 0) 22%);
+}
+/* escurece a cena para o conteúdo ficar legível (sobe depois da abertura) */
+.world-dim {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  opacity: var(--dim, 0);
+}
+/* luzes que mudam de lugar e de cor a cada seção */
+.world-light {
+  position: absolute;
+  inset: -10%;
+}
+.world-light.a {
+  opacity: var(--la, 0);
+  background: radial-gradient(42% 46% at var(--lax, 70%) var(--lay, 35%), rgba(63, 167, 156, 0.5), transparent 70%);
+}
+.world-light.b {
+  opacity: var(--lb, 0);
+  background: radial-gradient(40% 42% at 32% 52%, rgba(63, 224, 138, 0.4), transparent 70%);
+}
+
+/* ---------- Abertura (copy presa na tela enquanto a cena avança) ---------- */
 .intro {
   position: relative;
-  background: var(--bg);
 }
-/* Com JavaScript e movimento permitido: faixa alta, palco colado ao topo. Sem isso: página comum. */
-.js .intro:not(.is-static) {
+/* Com JavaScript e movimento permitido: faixa alta, copy colada ao topo. Sem isso: página comum. */
+.js .intro {
   height: calc(100vh + var(--run));
   height: calc(100svh + var(--run));
 }
@@ -278,57 +361,14 @@ a {
   justify-content: center;
   min-height: 100vh;
   min-height: 100svh;
-  padding-top: var(--header-h);
+  padding-top: calc(var(--header-h) + 2rem);
   overflow: hidden;
-  isolation: isolate;
 }
-.js .intro:not(.is-static) .intro-stage {
+.js .intro-stage {
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100svh;
-}
-
-.intro-media {
-  position: absolute;
-  inset: 0 0 0 auto;
-  z-index: -2;
-  width: 100%;
-  max-width: 1664px; /* 1,3× o vídeo de 1280 px: acima disso a imagem para de crescer */
-  height: 100%;
-  max-height: 936px;
-  margin-block: auto;
-  /* bordas dissolvem no grafite; a esquerda é o espaço do texto */
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24%), linear-gradient(to bottom, transparent 0, #000 6%, #000 84%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent 0, #000 24%), linear-gradient(to bottom, transparent 0, #000 6%, #000 84%, transparent 100%);
-  mask-composite: intersect;
-}
-.intro-media picture,
-.intro-poster,
-.intro-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 82% 50%;
-}
-.intro-canvas {
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.intro-canvas.is-ready {
-  opacity: 1;
-}
-
-.intro-shade {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(90deg, rgba(15, 20, 19, 0.94) 0%, rgba(15, 20, 19, 0.72) 34%, rgba(15, 20, 19, 0) 62%),
-    linear-gradient(to top, var(--bg) 0, rgba(15, 20, 19, 0) 22%);
 }
 
 .intro-copy {
@@ -359,7 +399,7 @@ a {
   text-wrap: balance;
 }
 .swap h1 {
-  font-size: clamp(2.75rem, 6.4vw, 5.75rem);
+  font-size: clamp(2.75rem, min(6.4vw, 10.5vh), 5.75rem);
 }
 .swap h1 span,
 .swap h2 span {
@@ -413,22 +453,22 @@ a {
 }
 
 /* Troca dos textos pela rolagem (--a e --b vêm de src/intro.ts): os dois ocupam o mesmo lugar. */
-.js .intro:not(.is-static) .swap {
+.js .intro .swap {
   display: grid;
 }
-.js .intro:not(.is-static) .swap > * {
+.js .intro .swap > * {
   grid-area: 1 / 1;
   margin-top: 0;
 }
-.js .intro:not(.is-static) .swap h2 {
+.js .intro .swap h2 {
   font-size: clamp(2.25rem, 5vw, 4.5rem);
   line-height: 0.98;
 }
-.js .intro:not(.is-static) .swap-a {
+.js .intro .swap-a {
   opacity: var(--a, 1);
   transform: translateY(calc((1 - var(--a, 1)) * -18px));
 }
-.js .intro:not(.is-static) .swap-b {
+.js .intro .swap-b {
   opacity: var(--b, 0);
   transform: translateY(calc((1 - var(--b, 0)) * 18px));
   pointer-events: none;
@@ -436,24 +476,24 @@ a {
 
 /* Movimento reduzido: página comum, com a imagem parada e os dois textos em sequência. */
 @media (prefers-reduced-motion: reduce) {
-  .js .intro:not(.is-static) {
+  .js .intro {
     height: auto;
   }
-  .js .intro:not(.is-static) .intro-stage {
+  .js .intro .intro-stage {
     position: relative;
     height: auto;
   }
-  .js .intro:not(.is-static) .swap {
+  .js .intro .swap {
     display: block;
   }
-  .js .intro:not(.is-static) .swap > * {
+  .js .intro .swap > * {
     opacity: 1;
     transform: none;
   }
-  .js .intro:not(.is-static) .swap-b {
+  .js .intro .swap-b {
     margin-top: 1.5rem;
   }
-  .js .intro:not(.is-static) .swap h2 {
+  .js .intro .swap h2 {
     font-size: clamp(1.5rem, 3vw, 2.25rem);
     line-height: 1.08;
   }
@@ -464,24 +504,29 @@ a {
 
 @media (max-width: 760px) {
   .intro-stage {
+    padding-top: var(--header-h);
     justify-content: flex-end;
     min-height: max(100svh, 620px);
   }
-  .intro-media {
+  .world {
+    height: max(100svh, 620px);
+  }
+  .world-media {
     inset: 0 0 auto 0;
     max-width: none;
     height: 60svh;
     max-height: none;
     min-height: 330px;
+    transform-origin: 62% 28%;
     -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 70%, transparent 100%);
     mask-image: linear-gradient(to bottom, #000 0, #000 70%, transparent 100%);
   }
-  .intro-media picture,
+  .world-media picture,
   .intro-poster,
   .intro-canvas {
     object-position: 50% 50%;
   }
-  .intro-shade {
+  .world-shade {
     background: linear-gradient(to bottom, rgba(15, 20, 19, 0.55) 0, rgba(15, 20, 19, 0) 18%, rgba(15, 20, 19, 0) 40%, var(--bg) 66%);
   }
   .intro-copy {
@@ -494,7 +539,7 @@ a {
   .swap h1 {
     font-size: clamp(2.2rem, 10.4vw, 3rem);
   }
-  .js .intro:not(.is-static) .swap h2 {
+  .js .intro .swap h2 {
     font-size: clamp(2rem, 9.2vw, 2.7rem);
   }
   .lead {
@@ -546,6 +591,10 @@ a {
 .demo,
 .steps {
   background: var(--bg);
+}
+/* a abertura já termina em degradê para o grafite: menos espaço vazio antes da demonstração */
+.demo {
+  padding-top: clamp(3.5rem, 7vw, 6rem);
 }
 .kit,
 .faq {
@@ -1142,5 +1191,78 @@ html.lb-open{overflow:hidden}
   .shot:hover .shot-hint,
   .shot:focus-visible .shot-hint {
     opacity: 1;
+  }
+}
+
+/* ---------- Continuidade: as seções deixam a cena aparecer por trás ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .demo,
+  .js .kit,
+  .js .steps,
+  .js .offer {
+    background: transparent;
+  }
+  .js .offer {
+    border-top: 0;
+  }
+  /* depois da oferta, a cena se apaga no grafite do FAQ (sem corte seco) */
+  .js .offer::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 9rem;
+    background: linear-gradient(transparent, var(--bg-2));
+    pointer-events: none;
+  }
+}
+.offer {
+  position: relative;
+}
+.offer-grid {
+  position: relative;
+  z-index: 1;
+}
+/* o fundo nunca disputa com o botão de compra: o texto da oferta fica sobre uma base escura */
+.offer-main {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: rgba(15, 20, 19, 0.78);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.head,
+.feature-text,
+.kit-text,
+.steps-list li {
+  text-shadow: 0 1px 14px rgba(15, 20, 19, 0.85);
+}
+
+/* ---------- Profundidade: entrada e saída dos blocos (variáveis escritas por src/scene.ts) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-fx] {
+    --in: 1;
+    --out: 0;
+    --c: 0;
+    opacity: calc(var(--in) * (1 - var(--out) * 0.85));
+    transform: translate3d(0, calc((1 - var(--in)) * 44px - var(--out) * 34px), 0) scale(calc(0.97 + var(--in) * 0.03));
+  }
+  .js [data-fx='shot'] {
+    transform: perspective(1100px) translate3d(0, calc((1 - var(--in)) * 70px - var(--out) * 40px + var(--c) * -22px), 0)
+      rotateX(calc((1 - var(--in)) * 9deg - var(--out) * 5deg)) scale(calc(0.95 + var(--in) * 0.05));
+    transform-origin: 50% 100%;
+  }
+}
+@media (max-width: 760px) {
+  .js [data-fx] {
+    transform: translate3d(0, calc((1 - var(--in)) * 28px - var(--out) * 20px), 0);
+  }
+}
+
+/* Sem a sequência (economia de dados, falha): abertura mais curta, a cena segue só com câmera e luz. */
+.no-frames {
+  --run: 110vh;
+}
+@media (max-width: 760px) {
+  .no-frames {
+    --run: 90vh;
   }
 }

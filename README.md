@@ -18,20 +18,25 @@ Não há linter configurado; a verificação estática é o `tsc` do build.
 | Textos e seções (abertura, demonstração, kit, como funciona, oferta, FAQ, rodapé) | `index.html` |
 | Checkout, nome e preço (fonte única; entram no HTML no build via `%CHECKOUT_URL%`, `%PRICE%`, `%AMOUNT%`) | `src/config.ts` |
 | Visual | `src/styles.css` |
-| Animação da abertura | `src/intro.ts` |
+| Cena global, câmera e profundidade | `src/scene.ts` |
 | Ampliação das capturas | `src/lightbox.ts` |
 | Cabeçalho, barra de compra, estado "depois da abertura" | `src/chrome.ts` |
 | UTM + evento de clique no checkout | `src/tracking.ts` |
 
-## Abertura com rolagem
+## Cena global (scrollytelling)
 
-`.intro` é uma faixa alta (100svh + 200vh no desktop, + 105vh no celular) com um palco `position: sticky`. `src/intro.ts` calcula o progresso pela posição da faixa (rolagem nativa, nada é interceptado) e, em `requestAnimationFrame` e só quando o valor muda, desenha o quadro correspondente num `<canvas>` e atualiza `--a`/`--b` (opacidade dos dois textos). Rolar para cima retrocede a cena; nada toca sozinho.
+Um palco fixo (`.world`, atrás de todo o conteúdo) acompanha a página inteira e é movido por `src/scene.ts` pelo progresso **global** da rolagem nativa (nada é interceptado, nada toca sozinho). Só `transform` e `opacity` são animados.
 
-- **Origem:** primeiro vídeo da bancada (1280×720, 24 fps) + imagem de apoio. Usados os quadros 1–84 (0–3,5 s), de 2 em 2 (12 quadros/s). Depois do quadro ~88 o teclado e a caneta do notebook se deformam e em ~130 há corte de câmera; esse trecho foi descartado, sem zoom nem interpolação. O quadro 0 é a própria imagem, igual ao poster.
-- **Gerar de novo:** `FFMPEG=/caminho/ffmpeg npm run sequence` (`scripts/build-hero-sequence.sh`). Saída em `public/hero`: `d-NNN.webp` (desktop, 1280×720, nativo) e `m-NNN.webp` (celular, recorte 4:5 de 576×720 que acompanha o notebook), 43 quadros cada.
-- **Carregamento:** só o poster no início (`<img>` + `preload`). Os quadros começam na primeira interação (ou 2,5 s após o load), em ordem espaçada→densa, com 3 (desktop) ou 2 (celular) downloads simultâneos. Na memória: arquivos comprimidos + cache LRU de 10 (desktop) / 16 (celular) quadros decodificados. O canvas usa o tamanho nativo do quadro (sem ampliar nem depender do devicePixelRatio); a imagem para de crescer acima de 1664 px de largura.
-- **Fallbacks:** `prefers-reduced-motion` → página comum, imagem parada, os dois textos em sequência e nenhum quadro baixado. `Save-Data`/2G ou falha dos quadros → modo estático (`.is-static`). Sem JavaScript → idem. Quadros que faltam no meio da rolagem: usa o mais próximo já carregado.
-- **A cena é ilustrativa:** há uma legenda na abertura dizendo que a planilha na tela não é a do kit. As capturas reais (versão demonstrativa, dados fictícios) vêm logo abaixo.
+1. **Quadros reais (43, nunca inventados):** a abertura (`.intro`: 100svh + 360vh no desktop, + 190vh no celular, palco sticky) avança 10–90% do trecho dela; os últimos 10% seguram o quadro final. Perto da oferta, a câmera **recua** por 20 quadros (42 → 22). No resto da página o quadro não muda: quem se mexe é a câmera.
+2. **Câmera independente:** escala, deslocamento, escurecimento (`--dim`) e luzes (`--la`, `--lb`) interpolados entre chaves por seção (abertura → demonstração → kit → como funciona → oferta → FAQ), com o ponto de leitura no meio da tela. As chaves estão em `KEYS` (`src/scene.ts`); a imagem fica sempre sob o escurecimento (≥ 50%, 70–76% no conteúdo), então a ampliação acima de 1,3× não aparece como perda de qualidade.
+3. **Profundidade do conteúdo:** blocos com `data-fx` entram por baixo (translate, perspectiva e escala) e saem por cima; capturas (`data-fx="shot"`) ganham `rotateX` e paralaxe pela posição.
+4. **Fim:** a oferta fica sobre uma base escura (o fundo nunca disputa com o botão), e uma faixa de 9rem dissolve a cena no grafite do FAQ, que é sólido.
+
+- **Origem:** primeiro vídeo da bancada (quadros 1–84, de 2 em 2) + imagem de apoio; o trecho depois do quadro ~88 deforma o notebook e há corte de câmera em ~130, então não é usado. Gerar de novo: `FFMPEG=/caminho/ffmpeg npm run sequence`. Saída em `public/hero` (`d-NNN` 1280×720; `m-NNN` recorte 4:5 de 576×720).
+- **Mistura de quadros:** o canvas mistura dois quadros vizinhos reais para o percurso longo não andar aos saltos (`BLEND` em `src/scene.ts`; `false` desliga).
+- **Carregamento:** só o poster no início. Os quadros começam na primeira interação (ou 2,5 s após o load), do espaçado ao denso (3 downloads simultâneos no desktop, 2 no celular). Memória: arquivos comprimidos + cache LRU de 10 (desktop) / 16 (celular) quadros decodificados. Canvas no tamanho nativo do quadro.
+- **Fallbacks:** movimento reduzido ou sem JavaScript → página comum (poster parado no topo, seções com fundo sólido, nada baixado). Economia de dados/2G ou falha dos quadros → classe `no-frames` (abertura mais curta; a câmera e as luzes continuam).
+- **A cena é ilustrativa:** legenda na abertura e frase na demonstração dizem que a planilha ao fundo não é a do kit; as capturas são reais.
 
 ## Imagens
 
@@ -48,7 +53,7 @@ Auditoria do que existia: `index.html` tinha `fbq('init')` + `fbq('track','PageV
 
 ## Revisão em navegador
 
-Com `npm run preview` rodando e um Chrome/Chromium: `CHROME_PATH=... node scripts/review.mjs` (abertura em vários cenários) e `node scripts/review-page.mjs` (página inteira, FAQ, ampliação, links). Capturas em `review/` (ignorada pelo git).
+Com `npm run preview` rodando e um Chrome/Chromium: `CHROME_PATH=... node scripts/review.mjs` (cenários e fallbacks), `review-journey.mjs [d|m]` (percurso completo, ida e volta), `review-scroll.mjs` (abertura) e `review-page.mjs` (FAQ, ampliação, links). Capturas em `review/` (ignorada pelo git).
 
 ## Pendências fora da página
 

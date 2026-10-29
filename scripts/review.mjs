@@ -45,7 +45,7 @@ async function run(name, {w, h, dpr = 1, mobile = false, reduce = false, js = tr
   const info = await page.evaluate(() => ({
     overflowX: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     canvasReady: document.querySelector('[data-intro-canvas]')?.classList.contains('is-ready'),
-    static: document.querySelector('[data-intro]').classList.contains('is-static'),
+    static: document.documentElement.classList.contains('no-frames'),
     introH: Math.round(document.querySelector('[data-intro]').offsetHeight / innerHeight * 100) + 'vh',
   }));
   const frames = reqs.filter(([u]) => /hero\/[dm]-/.test(u)).length;

@@ -40,6 +40,21 @@
 
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
+    <!-- Palco global: cena fixa por trás da página inteira (src/scene.ts). Decorativo; sem JavaScript fica parado no topo. -->
+    <div class="world" aria-hidden="true" data-world>
+      <div class="world-media">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/hero/m-000.webp" width="864" height="1080" />
+          <img class="intro-poster" src="/hero/d-000.webp" width="1920" height="1080" alt="" fetchpriority="high" decoding="async" />
+        </picture>
+        <canvas class="intro-canvas" data-intro-canvas></canvas>
+      </div>
+      <div class="world-shade"></div>
+      <div class="world-dim"></div>
+      <div class="world-light a"></div>
+      <div class="world-light b"></div>
+    </div>
+
     <header class="site-header">
       <div class="wrap header-inner">
         <a class="brand" href="#topo" aria-label="Kit Gestão Fácil, início da página">
@@ -60,15 +75,6 @@
       <!-- ABERTURA: com JavaScript e movimento permitido, a cena fica presa na tela e avança com a rolagem. -->
       <section class="intro" id="topo" data-intro aria-labelledby="intro-titulo">
         <div class="intro-stage">
-          <div class="intro-media" aria-hidden="true">
-            <picture>
-              <source media="(max-width: 760px)" srcset="/hero/m-000.webp" width="576" height="720" />
-              <img class="intro-poster" src="/hero/d-000.webp" width="1280" height="720" alt="" fetchpriority="high" decoding="async" />
-            </picture>
-            <canvas class="intro-canvas" data-intro-canvas></canvas>
-          </div>
-          <div class="intro-shade" aria-hidden="true"></div>
-
           <div class="wrap intro-copy">
             <p class="eyebrow">Kit digital para assistências técnicas</p>
 
@@ -96,51 +102,51 @@
       <!-- DEMONSTRAÇÃO REAL -->
       <section class="section demo" id="demonstracao" aria-labelledby="demo-titulo">
         <div class="wrap">
-          <header class="head">
+          <header class="head" data-fx>
             <p class="tag">Demonstração real</p>
             <h2 id="demo-titulo" class="display">A planilha como ela é. <span class="muted-line">Com dados inventados.</span></h2>
-            <p class="head-lead">Capturas da versão demonstrativa que vem no kit. Nomes, telefones e valores são fictícios; servem para você ver tudo funcionando antes de usar com clientes de verdade.</p>
+            <p class="head-lead">Capturas da versão demonstrativa que vem no kit. Nomes, telefones e valores são fictícios; servem para você ver tudo funcionando antes de usar com clientes de verdade. A cena ao fundo é ilustrativa; as capturas são reais.</p>
           </header>
 
           <article class="feature">
-            <div class="feature-text">
+            <div class="feature-text" data-fx>
               <h3>Cada aparelho tem um status</h3>
               <p>Recebido, em diagnóstico, aguardando peça ou aprovação, em reparo, pronto para retirada, entregue ou cancelado. Você escolhe o status em uma lista, a cada etapa. Prazo vencido fica destacado em vermelho.</p>
             </div>
-            <a class="shot" href="/img/os-status-826.webp" data-zoom data-caption="Colunas Responsável, Prazo previsto e Status da planilha demonstrativa (dados fictícios)">
+            <a class="shot" data-fx="shot" href="/img/os-status-826.webp" data-zoom data-caption="Colunas Responsável, Prazo previsto e Status da planilha demonstrativa (dados fictícios)">
               <img src="/img/os-status-826.webp" srcset="/img/os-status-420.webp 420w, /img/os-status-826.webp 826w" sizes="(max-width: 900px) 92vw, 560px" width="826" height="610" loading="lazy" decoding="async" alt="Planilha demonstrativa: colunas de responsável, prazo e status, com um aparelho pronto para retirada em verde e um prazo vencido em vermelho" />
               <span class="shot-hint" aria-hidden="true">Ampliar</span>
             </a>
           </article>
 
           <article class="feature is-flip">
-            <div class="feature-text">
+            <div class="feature-text" data-fx>
               <h3>Prazos e avisos, sem caderno</h3>
               <p>A coluna Situação aponta o que está atrasado e o que está pronto para retirada. O aviso é para você olhar: o kit não envia mensagens nem avisa o cliente.</p>
             </div>
-            <a class="shot" href="/img/os-situacao-669.webp" data-zoom data-caption="Coluna Situação / Alerta da planilha demonstrativa (dados fictícios)">
+            <a class="shot" data-fx="shot" href="/img/os-situacao-669.webp" data-zoom data-caption="Coluna Situação / Alerta da planilha demonstrativa (dados fictícios)">
               <img src="/img/os-situacao-669.webp" srcset="/img/os-situacao-334.webp 334w, /img/os-situacao-669.webp 669w" sizes="(max-width: 900px) 80vw, 460px" width="669" height="610" loading="lazy" decoding="async" alt="Coluna Situação da planilha demonstrativa com os alertas Atrasada (prazo vencido) e Avisar cliente / aguardando retirada" />
               <span class="shot-hint" aria-hidden="true">Ampliar</span>
             </a>
           </article>
 
           <article class="feature">
-            <div class="feature-text">
+            <div class="feature-text" data-fx>
               <h3>Quanto falta receber, por atendimento</h3>
               <p>Total, valor recebido e saldo pendente de cada ordem de serviço. O saldo em aberto aparece em amarelo. Quem já pagou tudo fica com saldo zero.</p>
             </div>
-            <a class="shot" href="/img/os-valores-728.webp" data-zoom data-caption="Colunas Total, Valor recebido e Saldo pendente da planilha demonstrativa (dados fictícios)">
+            <a class="shot" data-fx="shot" href="/img/os-valores-728.webp" data-zoom data-caption="Colunas Total, Valor recebido e Saldo pendente da planilha demonstrativa (dados fictícios)">
               <img src="/img/os-valores-728.webp" srcset="/img/os-valores-364.webp 364w, /img/os-valores-728.webp 728w" sizes="(max-width: 900px) 80vw, 460px" width="728" height="613" loading="lazy" decoding="async" alt="Colunas de total, valor recebido e saldo pendente da planilha demonstrativa, com saldos em aberto destacados em amarelo" />
               <span class="shot-hint" aria-hidden="true">Ampliar</span>
             </a>
           </article>
 
           <article class="feature is-wide">
-            <div class="feature-text">
+            <div class="feature-text" data-fx>
               <h3>O resumo se atualiza sozinho</h3>
               <p>A aba Resumo conta as OS ativas, prontas, entregues e atrasadas e soma o que já foi recebido e o que falta receber. Esses valores não são lucro nem faturamento do mês: a planilha não calcula isso.</p>
             </div>
-            <a class="shot" href="/img/resumo-demo-1280.webp" data-zoom data-caption="Aba Resumo da planilha demonstrativa (dados fictícios)">
+            <a class="shot" data-fx="shot" href="/img/resumo-demo-1280.webp" data-zoom data-caption="Aba Resumo da planilha demonstrativa (dados fictícios)">
               <img src="/img/resumo-demo-1280.webp" srcset="/img/resumo-demo-640.webp 640w, /img/resumo-demo-1280.webp 1280w" sizes="(max-width: 900px) 92vw, 760px" width="1280" height="770" loading="lazy" decoding="async" alt="Aba Resumo da planilha demonstrativa: 10 OS registradas, 6 ativas, 1 pronta, 1 atrasada, valor recebido de R$ 890,00 e saldo pendente de R$ 710,00" />
               <span class="shot-hint" aria-hidden="true">Ampliar</span>
             </a>
@@ -151,7 +157,7 @@
       <!-- O QUE VEM NO KIT -->
       <section class="section kit" id="kit" aria-labelledby="kit-titulo">
         <div class="wrap">
-          <header class="head">
+          <header class="head" data-fx>
             <p class="tag">O que vem no kit</p>
             <h2 id="kit-titulo" class="display">Sete arquivos. <span class="muted-line">Um mesmo atendimento.</span></h2>
             <p class="head-lead">Planilha em Excel (.xlsx), documentos em Word (.docx) e PDFs, todos para usar no computador. As imagens são capturas reais dos arquivos.</p>
@@ -159,20 +165,20 @@
 
           <ol class="kit-list">
             <li class="kit-row">
-              <div class="kit-text">
+              <div class="kit-text" data-fx>
                 <span class="kit-n" aria-hidden="true">01</span>
                 <h3>Planilha de serviços</h3>
                 <p class="kit-format">Excel (.xlsx) · versão para uso e versão demonstrativa</p>
                 <p>Uma linha por ordem de serviço: cliente, aparelho, defeito, prazo, status e valores. Vem vazia, pronta para o dia a dia, e também com 10 atendimentos fictícios para você ver tudo funcionando. São cinco abas: Comece aqui, Ordens de serviço, Peças e estoque, Movimentações e Resumo.</p>
               </div>
-              <a class="shot" href="/img/os-clientes-1120.webp" data-zoom data-caption="Aba Ordens de Serviço da planilha demonstrativa (dados fictícios)">
+              <a class="shot" data-fx="shot" href="/img/os-clientes-1120.webp" data-zoom data-caption="Aba Ordens de Serviço da planilha demonstrativa (dados fictícios)">
                 <img src="/img/os-clientes-1120.webp" srcset="/img/os-clientes-560.webp 560w, /img/os-clientes-1120.webp 1120w" sizes="(max-width: 900px) 92vw, 540px" width="1120" height="609" loading="lazy" decoding="async" alt="Início da aba Ordens de Serviço: número da OS, data de entrada, cliente e telefone (dados fictícios)" />
                 <span class="shot-hint" aria-hidden="true">Ampliar</span>
               </a>
             </li>
 
             <li class="kit-row">
-              <div class="kit-text">
+              <div class="kit-text" data-fx>
                 <span class="kit-n" aria-hidden="true">02</span>
                 <h3>Controle de peças e movimentações</h3>
                 <p class="kit-format">Abas da própria planilha</p>
@@ -180,11 +186,11 @@
                 <p class="kit-limit">Mudar o status de uma OS não mexe no estoque: a saída da peça precisa ser registrada.</p>
               </div>
               <div class="shot-pair">
-                <a class="shot" href="/img/pecas-saldo-1571.webp" data-zoom data-caption="Saldo atual, valor em estoque e alerta de estoque baixo (dados fictícios)">
+                <a class="shot" data-fx="shot" href="/img/pecas-saldo-1571.webp" data-zoom data-caption="Saldo atual, valor em estoque e alerta de estoque baixo (dados fictícios)">
                   <img src="/img/pecas-saldo-1571.webp" srcset="/img/pecas-saldo-786.webp 786w, /img/pecas-saldo-1571.webp 1571w" sizes="(max-width: 900px) 92vw, 540px" width="1571" height="613" loading="lazy" decoding="async" alt="Aba Peças e Estoque: saldo atual, valor em estoque e alerta de estoque baixo (dados fictícios)" />
                   <span class="shot-hint" aria-hidden="true">Ampliar</span>
                 </a>
-                <a class="shot" href="/img/movimentacoes-1504.webp" data-zoom data-caption="Aba Movimentações com entradas e saídas de peças (dados fictícios)">
+                <a class="shot" data-fx="shot" href="/img/movimentacoes-1504.webp" data-zoom data-caption="Aba Movimentações com entradas e saídas de peças (dados fictícios)">
                   <img src="/img/movimentacoes-1504.webp" srcset="/img/movimentacoes-752.webp 752w, /img/movimentacoes-1504.webp 1504w" sizes="(max-width: 900px) 92vw, 540px" width="1504" height="417" loading="lazy" decoding="async" alt="Aba Movimentações: data, peça, entrada ou saída, quantidade e OS relacionada (dados fictícios)" />
                   <span class="shot-hint" aria-hidden="true">Ampliar</span>
                 </a>
@@ -192,44 +198,44 @@
             </li>
 
             <li class="kit-row">
-              <div class="kit-text">
+              <div class="kit-text" data-fx>
                 <span class="kit-n" aria-hidden="true">03</span>
                 <h3>Checklist de entrada do aparelho</h3>
                 <p class="kit-format">Word (.docx) e PDF · uma folha A4</p>
                 <p>Registra o estado do aparelho quando ele chega: tela, carcaça, acessórios e testes de entrada. Não pede senha, PIN nem padrão de desbloqueio. Troque o nome da sua assistência no Word e imprima.</p>
               </div>
-              <a class="shot shot-doc" href="/img/checklist-960.webp" data-zoom data-caption="Checklist de entrada do aparelho (PDF do kit)">
+              <a class="shot shot-doc" data-fx="shot" href="/img/checklist-960.webp" data-zoom data-caption="Checklist de entrada do aparelho (PDF do kit)">
                 <img src="/img/checklist-960.webp" srcset="/img/checklist-480.webp 480w, /img/checklist-960.webp 960w" sizes="(max-width: 900px) 70vw, 340px" width="960" height="1357" loading="lazy" decoding="async" alt="Página do checklist de entrada do aparelho, com campos de cliente, aparelho, condição visual, acessórios e testes" />
                 <span class="shot-hint" aria-hidden="true">Ampliar</span>
               </a>
             </li>
 
             <li class="kit-row">
-              <div class="kit-text">
+              <div class="kit-text" data-fx>
                 <span class="kit-n" aria-hidden="true">04</span>
                 <h3>Modelo de orçamento</h3>
                 <p class="kit-format">Word (.docx) e PDF · uma folha A4</p>
                 <p>Diagnóstico, peças e serviços, prazo, validade, pagamento e aprovação do cliente. Subtotais e total são preenchidos à mão no documento; para conferir as contas, use a planilha.</p>
               </div>
-              <a class="shot shot-doc" href="/img/orcamento-960.webp" data-zoom data-caption="Modelo de orçamento (PDF do kit)">
+              <a class="shot shot-doc" data-fx="shot" href="/img/orcamento-960.webp" data-zoom data-caption="Modelo de orçamento (PDF do kit)">
                 <img src="/img/orcamento-960.webp" srcset="/img/orcamento-480.webp 480w, /img/orcamento-960.webp 960w" sizes="(max-width: 900px) 70vw, 340px" width="960" height="1357" loading="lazy" decoding="async" alt="Página do modelo de orçamento, com campos de diagnóstico, peças e serviços, prazo e aprovação" />
                 <span class="shot-hint" aria-hidden="true">Ampliar</span>
               </a>
             </li>
 
             <li class="kit-row">
-              <div class="kit-text">
+              <div class="kit-text" data-fx>
                 <span class="kit-n" aria-hidden="true">05</span>
                 <h3>Guia rápido</h3>
                 <p class="kit-format">PDF · 8 páginas</p>
                 <p>Por onde começar, quais campos preencher, um atendimento completo de exemplo, status, peças, cópias de segurança e cuidado com os dados dos clientes. É um guia escrito: o kit não inclui vídeo tutorial.</p>
               </div>
               <div class="shot-pair shot-pair-docs">
-                <a class="shot shot-doc" href="/img/guia-p1-960.webp" data-zoom data-caption="Guia rápido, página 1 (PDF do kit)">
+                <a class="shot shot-doc" data-fx="shot" href="/img/guia-p1-960.webp" data-zoom data-caption="Guia rápido, página 1 (PDF do kit)">
                   <img src="/img/guia-p1-960.webp" srcset="/img/guia-p1-480.webp 480w, /img/guia-p1-960.webp 960w" sizes="(max-width: 900px) 44vw, 260px" width="960" height="1357" loading="lazy" decoding="async" alt="Primeira página do guia rápido, com a lista dos arquivos do kit" />
                   <span class="shot-hint" aria-hidden="true">Ampliar</span>
                 </a>
-                <a class="shot shot-doc" href="/img/guia-p4-960.webp" data-zoom data-caption="Guia rápido, página 4 (PDF do kit)">
+                <a class="shot shot-doc" data-fx="shot" href="/img/guia-p4-960.webp" data-zoom data-caption="Guia rápido, página 4 (PDF do kit)">
                   <img src="/img/guia-p4-960.webp" srcset="/img/guia-p4-480.webp 480w, /img/guia-p4-960.webp 960w" sizes="(max-width: 900px) 44vw, 260px" width="960" height="1357" loading="lazy" decoding="async" alt="Quarta página do guia rápido, sobre peças e movimentações de estoque" />
                   <span class="shot-hint" aria-hidden="true">Ampliar</span>
                 </a>
@@ -242,22 +248,22 @@
       <!-- COMO FUNCIONA -->
       <section class="section steps" id="como-funciona" aria-labelledby="como-titulo">
         <div class="wrap">
-          <header class="head">
+          <header class="head" data-fx>
             <p class="tag">Como funciona</p>
             <h2 id="como-titulo" class="display">Da compra ao primeiro atendimento registrado.</h2>
           </header>
           <ol class="steps-list">
-            <li>
+            <li data-fx data-fx-delay="0">
               <span class="step-n" aria-hidden="true">1</span>
               <h3>Comprar</h3>
               <p>O pagamento é feito no checkout da Kiwify, em pagamento único de %PRICE%.</p>
             </li>
-            <li>
+            <li data-fx data-fx-delay="1">
               <span class="step-n" aria-hidden="true">2</span>
               <h3>Acessar os arquivos</h3>
               <p>Depois que o pagamento for aprovado, os arquivos ficam disponíveis para você acessar e baixar.</p>
             </li>
-            <li>
+            <li data-fx data-fx-delay="2">
               <span class="step-n" aria-hidden="true">3</span>
               <h3>Baixar e começar pelo guia</h3>
               <p>Leia o guia rápido, abra a versão demonstrativa para ver tudo funcionando e passe a registrar na planilha de uso.</p>
@@ -269,7 +275,7 @@
       <!-- OFERTA -->
       <section class="section offer" id="oferta" aria-labelledby="oferta-titulo">
         <div class="wrap offer-grid">
-          <div class="offer-main">
+          <div class="offer-main" data-fx>
             <p class="tag">Kit completo</p>
             <h2 id="oferta-titulo" class="display">Tudo em um único kit.</h2>
             <p class="price-big" aria-label="%PRICE%, pagamento único"><span class="cur">R$</span><span class="val">%AMOUNT%</span></p>
@@ -284,7 +290,7 @@
             <a class="btn btn-lg" href="%CHECKOUT_URL%" data-checkout="oferta">Comprar o kit por %PRICE%</a>
             <p class="fine">Pagamento pela Kiwify. Arquivos para usar no computador, sem aplicativo e sem login do kit. Não inclui mensagens de WhatsApp.</p>
           </div>
-          <div class="offer-visual" aria-hidden="true">
+          <div class="offer-visual" aria-hidden="true" data-fx>
             <img src="/img/checklist-480.webp" width="480" height="678" loading="lazy" decoding="async" alt="" class="of of-1" />
             <img src="/img/orcamento-480.webp" width="480" height="678" loading="lazy" decoding="async" alt="" class="of of-2" />
             <img src="/img/guia-p1-480.webp" width="480" height="678" loading="lazy" decoding="async" alt="" class="of of-3" />
@@ -295,7 +301,7 @@
       <!-- FAQ -->
       <section class="section faq" id="duvidas" aria-labelledby="faq-titulo">
         <div class="wrap faq-wrap">
-          <header class="head">
+          <header class="head" data-fx>
             <p class="tag">Perguntas frequentes</p>
             <h2 id="faq-titulo" class="display">O que vale saber antes de comprar.</h2>
           </header>

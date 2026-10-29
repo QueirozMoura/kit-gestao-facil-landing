@@ -1,7 +1,7 @@
 import '@fontsource-variable/archivo/wght.css';
 import './styles.css';
 import {initChrome} from './chrome';
-import {initIntro} from './intro';
+import {initScene} from './scene';
 import {initLightbox} from './lightbox';
 import {initTracking} from './tracking';
 
@@ -9,7 +9,7 @@ import {initTracking} from './tracking';
 initTracking();
 initChrome();
 initLightbox();
-const intro = initIntro();
+const intro = initScene();
 
 // Em desenvolvimento, ao recarregar o módulo, solta listeners e quadros do módulo antigo.
 import.meta.hot?.dispose(() => intro?.destroy());
